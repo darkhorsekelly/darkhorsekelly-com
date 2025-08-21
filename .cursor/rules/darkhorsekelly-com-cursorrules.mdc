@@ -1,0 +1,73 @@
+---
+alwaysApply: true
+---
+# Andrew Kelly LLC - "Generalist's Notebook" Project Rules
+
+This document outlines the development standards and patterns for the Andrew Kelly LLC personal website project. Adhere to these rules strictly to ensure consistency, type-safety, and maintainability.
+
+---
+
+## 1. Core Technology Stack
+
+- **Framework**: Next.js (App Router)
+- **Language**: TypeScript
+- **Styling**: Tailwind CSS
+- **Database**: PostgreSQL
+- **ORM**: Prisma
+- **Validation**: Zod
+- **Authentication**: NextAuth.js
+- **Testing**: Jest with React Testing Library (Unit/Component), Playwright (E2E)
+- **Content**: Local MDX files (`.mdx`) with YAML frontmatter
+
+---
+
+## 2. Data & Server-Side Logic
+
+All data logic must be secure, type-safe, and executed on the server.
+
+### a. Server Actions
+
+- **Primary Mutation Method**: All database mutations (create, update, delete) **must** be handled by Server Actions. Do not create separate API Route Handlers for mutations.
+- **Location**: Define Server Actions either directly within the Server Component that uses them or in a dedicated `app/lib/actions.ts` file.
+- **Invocation**: When calling a Server Action from a Client Component, always wrap the call in `startTransition` from React's `useTransition` hook to manage pending UI states.
+
+### b. Database Access with Prisma
+
+- **Exclusivity**: All database queries **must** go through the Prisma client. Do not use raw SQL queries.
+- **Location**: Interact with the Prisma client only within Server Components or Server Actions. **Never** import or use the Prisma client in a file marked with `'use client'`.
+- **Schema**: The source of truth for database models is `prisma/schema.prisma`. When a model is updated, always generate and run a new migration using `npx prisma migrate dev`.
+
+### c. Validation with Zod
+
+- **Server-Side First**: All incoming data from forms **must** be validated within the Server Action using a Zod schema before being passed to Prisma.
+- **Schema Location**: Define all Zod schemas in `app/lib/schemas.ts`. Schemas should correspond to form actions (e.g., `CreateProjectSchema`, `UpdateArtifactSchema`).
+- **Parsing**: Use `safeParse()` to handle validation results, allowing you to return detailed error messages to the form UI.
+
+## 3. Component & UI Development
+- **Server Components by Default**: Build all components as Server Components unless they require hooks (useState, useEffect) or event listeners (onClick). Only then, opt into Client Components with the 'use client' directive.
+
+- **Data Fetching**: Fetch data in Server Components by await-ing Prisma calls directly. Do not use useEffect for data fetching.
+
+- **Styling**: Use Tailwind CSS utility classes for all styling. Use the clsx library for applying classes conditionally. Do not write global CSS or use CSS Modules.
+
+- **Icons**: Use icons exclusively from @heroicons/react.
+
+## 4. Content Management (Artifacts)
+- **Source**: All artifact content (dev logs, blog posts) is stored in .mdx files within the /content directory.
+
+- **Frontmatter**: Every .mdx file must contain a YAML frontmatter block with the following fields: title (string), publish_date (ISO 8601 string), is_featured (boolean), project_ids (array of strings), and tag_ids (array of strings).
+
+- **Rendering**: Use gray-matter to parse frontmatter and next-mdx-remote to render content in Server Components.
+
+## 5. Test-Driven Development (TDD) Workflow
+Follow the "Red-Green-Refactor" cycle for all new features.
+
+- **Red (Failing Test)**: Before writing any feature code, write a test using Jest and React Testing Library that describes the desired outcome and fails.
+
+- **Green (Passing Code)**: Write the simplest possible code in your components and Server Actions to make the test pass.
+
+- **Refactor**: Clean up and improve the code while ensuring the test continues to pass.
+
+- **Example AI Prompt for TDD**:
+
+"I have written a failing Jest test in __tests__/ui/ProjectTracker.test.tsx that asserts a new reaction is displayed after clicking the react button. Here is the shell of my component in app/ui/Workshop.tsx and my Server Action in app/lib/actions.ts. Write the necessary code to make the test pass."
