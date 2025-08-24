@@ -9,7 +9,8 @@ const createJestConfig = nextJest({
 const customJestConfig = {
   setupFilesAfterEnv: ['<rootDir>/jest.setup.js'],
   testEnvironment: 'jsdom',
-  testPathIgnorePatterns: ['<rootDir>/.next/', '<rootDir>/node_modules/'],
+  // Ignore the e2e directory (Playwright) for Jest tests
+  testPathIgnorePatterns: ['<rootDir>/.next/', '<rootDir>/node_modules/', "<rootDir>/e2e/", "<rootDir>/tests-examples/"],
   collectCoverageFrom: [
     'app/**/*.{js,jsx,ts,tsx}',
     '!app/**/*.d.ts',

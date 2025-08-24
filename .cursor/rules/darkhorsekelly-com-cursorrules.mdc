@@ -1,3 +1,7 @@
+---
+alwaysApply: true
+---
+
 # Dark Horse Kelly - "Generalist's Notebook" Project Rule
 
 This rule defines the specific technical patterns and library usage for the "Generalist's Notebook" project. It complements the global TDD and spec-referencing rules by providing the "how-to" for this specific codebase.

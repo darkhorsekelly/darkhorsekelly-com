@@ -212,7 +212,3 @@ Handle how content is rendered, styled & displayed
 * 🏷️ **Field**: `role` (enum: "Admin", "User")  
 * 🏷️ **Field**: `password_hash` (string)
 
-## Backlog
-
-Idea bin with paragraph descriptions 
-
