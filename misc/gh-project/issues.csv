@@ -1,0 +1,47 @@
+title,body,milestone
+Add Jest + RTL baseline,DoD: npm test runs a sample component test and passes.,M0: Foundations
+Add Playwright baseline,DoD: Headless smoke test visiting / passes in CI mode.,M0: Foundations
+Add ESLint + Tailwind plugin + Prettier config,DoD: npm run lint clean; no new warnings in staged files.,M0: Foundations
+Set up CI scripts,DoD: Single npm run ci executes lint; unit; e2e (headed off); and build.,M0: Foundations
+Create app/lib folder and utilities scaffolding,DoD: app/lib/prisma.ts; app/lib/schemas.ts; app/lib/actions.ts files exist with stubs.,M0: Foundations
+Create content/ with 2 example .mdx artifacts + valid frontmatter,DoD: gray-matter parses; frontmatter matches spec.,M1: Content + DB
+Install gray-matter and next-mdx-remote with MDX config,DoD: Server render sample MDX with a custom component.,M1: Content + DB
+Initialize Prisma with PostgreSQL connection,DoD: prisma/schema.prisma exists; npx prisma migrate dev succeeds.,M1: Content + DB
+Model project; artifact; tag; reaction; user,DoD: Migrations created; Prisma Client builds; relational constraints enforced.,M1: Content + DB
+Tailwind design tokens + base layout,DoD: app/layout.tsx uses Tailwind container; font; and color tokens.,M2: Core UI
+App shell header/footer components,DoD: Header renders active route; footer has build/version.,M2: Core UI
+Atoms: Button; Input; Select; Badge; Table; Modal,DoD: Story-like playground page renders all atoms.,M2: Core UI
+Server component patterns,DoD: Example server component reads from Prisma directly and renders.,M2: Core UI
+Create app/page.tsx Workshop route shell,DoD: Renders toggle for Tracker/Calendar (state in client child).,M3: Workshop page
+Server data mappers for Project tracker,DoD: Server function returns per-project: status; dates; artifact count; reaction summary.,M3: Workshop page
+ProjectTracker table component,DoD: Renders rows; clicking artifact count navigates to filtered Notebook.,M3: Workshop page
+Reaction summary cell,DoD: Shows emoji with subscripts; empty state hidden.,M3: Workshop page
+Sentiment phrase display + toggle list,DoD: Clicking sentiment shows full reactions list for project.,M3: Workshop page
+Calendar view scaffold,DoD: Projects as spans; artifacts as pins; month grid.,M3: Workshop page
+Route app/notebook/page.tsx,DoD: Renders list with server data; accepts query params.,M4: Notebook page
+Filters: tag; date range; sort by date/reactions,DoD: Zod-validated search params -> server query composition.,M4: Notebook page
+Pagination,DoD: Stable per-page with URL state.,M4: Notebook page
+Grouping modes (none; by project; by month/year),DoD: Server grouping transforms with headers.,M4: Notebook page
+Route app/artifacts/[id]/page.tsx,DoD: Renders MDX content + frontmatter metadata.,M5: Artifact view page
+Associated entities,DoD: Lists tags; projects; reactions.,M5: Artifact view page
+React to artifact UI,DoD: Opens modal -> emoji select + optional text -> Server Action persists.,M5: Artifact view page
+Route app/admin/page.tsx,DoD: Auth-protected shell with tabs: Projects; Artifacts; Tags.,M6: Admin
+CRUD Projects (Server Actions + Zod),DoD: Create/Update/Delete with optimistic UI and server validation.,M6: Admin
+CRUD Artifacts (metadata) + MDX path picker,DoD: From Admin; associate content file paths from content/.,M6: Admin
+Map many:many relationships,DoD: Assign projects<->artifacts and tags<->artifacts in UI.,M6: Admin
+Basic list filters/search,DoD: Admin lists filter by name/status.,M6: Admin
+NextAuth + Prisma adapter setup,DoD: Sign in/out; user records persisted.,M7: Auth
+Protect Admin and Server Actions,DoD: Unauthorized users redirected; Server Actions read session server-side.,M7: Auth
+Role support (Admin/User),DoD: Admin-only CRUD; Users can react.,M7: Auth
+Reaction constraints,DoD: One reaction per user/session per item enforced server-side.,M8: Reactions + Sentiment (write-time)
+Server Actions for project and artifact reactions,DoD: Zod-validated; returns aggregates for UI refresh.,M8: Reactions + Sentiment (write-time)
+LLM sentiment phrase (write-time),DoD: On reaction create/update; compute/store llm_sentiment_phrase for project.,M8: Reactions + Sentiment (write-time)
+LLM summary (on-demand write),DoD: 'Get summary' action writes llm_summary to project; button updates UI.,M8: Reactions + Sentiment (write-time)
+Smart header component,DoD: Server-rendered summary at top with linked top artifacts.,M9: AI Smart Header/Search
+AI-assisted search (Notebook),DoD: Server Action accepts query; returns filtered artifacts + summary.,M9: AI Smart Header/Search
+Rate limiting + logging,DoD: Limits per user/session; server logs for prompts/responses (PII-safe).,M9: AI Smart Header/Search
+Unit tests for Server Actions and Zod schemas,DoD: Happy-path + validation failures covered.,M10: E2E + Perf + A11y
+Component tests for table; filters; modals,DoD: Interactions verified with RTL.,M10: E2E + Perf + A11y
+E2E: sign-in; react; sort by reactions; admin CRUD,DoD: Playwright suite green locally and in CI.,M10: E2E + Perf + A11y
+Perf passes,DoD: Avoid N+1 queries; indexes; streaming where useful.,M10: E2E + Perf + A11y
+A11y pass,DoD: Keyboard traps avoided; ARIA for modals; color contrast OK.,M10: E2E + Perf + A11y

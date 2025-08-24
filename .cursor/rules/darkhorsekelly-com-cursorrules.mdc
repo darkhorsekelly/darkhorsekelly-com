@@ -1,9 +1,8 @@
----
-alwaysApply: true
----
-# Andrew Kelly LLC - "Generalist's Notebook" Project Rules
+# Dark Horse Kelly - "Generalist's Notebook" Project Rule
 
-This document outlines the development standards and patterns for the Andrew Kelly LLC personal website project. Adhere to these rules strictly to ensure consistency, type-safety, and maintainability.
+This rule defines the specific technical patterns and library usage for the "Generalist's Notebook" project. It complements the global TDD and spec-referencing rules by providing the "how-to" for this specific codebase.
+
+Andrew's philosophy is a two-pass approach between the Cursor agent and the human (Andrew). The below rules support this approach. 
 
 ---
 
@@ -11,63 +10,74 @@ This document outlines the development standards and patterns for the Andrew Kel
 
 - **Framework**: Next.js (App Router)
 - **Language**: TypeScript
-- **Styling**: Tailwind CSS
-- **Database**: PostgreSQL
+- **Database**: PostgreSQL (via Supabase)
 - **ORM**: Prisma
-- **Validation**: Zod
 - **Authentication**: NextAuth.js
+- **Styling**: Tailwind CSS (Minimal Use - See Section 6)
+- **Content**: Local MDX files (`.mdx`)
 - **Testing**: Jest with React Testing Library (Unit/Component), Playwright (E2E)
-- **Content**: Local MDX files (`.mdx`) with YAML frontmatter
 
 ---
 
 ## 2. Data & Server-Side Logic
 
-All data logic must be secure, type-safe, and executed on the server.
+All data logic must be type-safe and executed on the server. Do not create a separate API layer.
 
-### a. Server Actions
+### a. Database Access & Mutations
+- **Prisma Exclusivity**: All database queries and mutations **must** use the **Prisma** client. Do not use the Supabase JS client for database access. The Prisma client must only be imported and used in server-side files (Server Components or Server Actions).
+- **Server Actions for Mutations**: All database writes (create, update, delete) **must** be handled via **Server Actions**. Define these in `app/lib/actions.ts` or directly within the Server Component that uses them.
 
-- **Primary Mutation Method**: All database mutations (create, update, delete) **must** be handled by Server Actions. Do not create separate API Route Handlers for mutations.
-- **Location**: Define Server Actions either directly within the Server Component that uses them or in a dedicated `app/lib/actions.ts` file.
-- **Invocation**: When calling a Server Action from a Client Component, always wrap the call in `startTransition` from React's `useTransition` hook to manage pending UI states.
+### b. Data Validation
+- **Zod Enforcement**: All data from forms or external sources **must** be validated with a **Zod** schema within the Server Action *before* being passed to Prisma.
+- **Schema Location**: Define Zod schemas in `app/lib/schemas.ts`.
 
-### b. Database Access with Prisma
+### c. Error Handling
+- **Error Handling**: All Server Actions that perform database operations or external API calls must be wrapped in a try...catch block. In the catch block, log the specific error to the console for debugging and return a generic, user-friendly error message (e.g., { message: 'Database Error: Failed to perform action.' }).
 
-- **Exclusivity**: All database queries **must** go through the Prisma client. Do not use raw SQL queries.
-- **Location**: Interact with the Prisma client only within Server Components or Server Actions. **Never** import or use the Prisma client in a file marked with `'use client'`.
-- **Schema**: The source of truth for database models is `prisma/schema.prisma`. When a model is updated, always generate and run a new migration using `npx prisma migrate dev`.
-
-### c. Validation with Zod
-
-- **Server-Side First**: All incoming data from forms **must** be validated within the Server Action using a Zod schema before being passed to Prisma.
-- **Schema Location**: Define all Zod schemas in `app/lib/schemas.ts`. Schemas should correspond to form actions (e.g., `CreateProjectSchema`, `UpdateArtifactSchema`).
-- **Parsing**: Use `safeParse()` to handle validation results, allowing you to return detailed error messages to the form UI.
+---
 
 ## 3. Component & UI Development
-- **Server Components by Default**: Build all components as Server Components unless they require hooks (useState, useEffect) or event listeners (onClick). Only then, opt into Client Components with the 'use client' directive.
 
-- **Data Fetching**: Fetch data in Server Components by await-ing Prisma calls directly. Do not use useEffect for data fetching.
+- **Server Components by Default**: All components must be React Server Components unless they require hooks (`useState`, `useEffect`) or event listeners (`onClick`). Only then should you use the `'use client'` directive.
+- **Data Fetching**: Data should be fetched directly in Server Components by `await`-ing Prisma calls. Do not fetch data in `useEffect` hooks.
+- **Styling**: Adhere strictly to the "Function Over Form" philosophy outlined in Section 6.
+- **File Naming Conventions**: React component files and directories must use PascalCase (e.g., /ui/ProjectTracker.tsx). Non-component files (actions, schemas, utilities) must use kebab-case (e.g., /lib/server-actions.ts). Each component must be in its own file.
+- **Code Documentation**: Any non-trivial function, Server Action, or component with multiple props must include a TSDoc comment block explaining its purpose, parameters (@param), and return value (@returns).
 
-- **Styling**: Use Tailwind CSS utility classes for all styling. Use the clsx library for applying classes conditionally. Do not write global CSS or use CSS Modules.
 
-- **Icons**: Use icons exclusively from @heroicons/react.
+---
 
 ## 4. Content Management (Artifacts)
-- **Source**: All artifact content (dev logs, blog posts) is stored in .mdx files within the /content directory.
 
-- **Frontmatter**: Every .mdx file must contain a YAML frontmatter block with the following fields: title (string), publish_date (ISO 8601 string), is_featured (boolean), project_ids (array of strings), and tag_ids (array of strings).
+- **Source**: All primary content (`Dev Log`, `Blog Post`) must be stored as `.mdx` files in the `/content` directory.
+- **Frontmatter Requirement**: Every `.mdx` file must contain a YAML frontmatter block with the following keys: `title`, `publish_date`, `is_featured`, `project_ids`, and `tag_ids` [cite: 35-39].
+- **Parsing & Rendering**: Use **`gray-matter`** to parse frontmatter and **`next-mdx-remote`** to render the content itself.
 
-- **Rendering**: Use gray-matter to parse frontmatter and next-mdx-remote to render content in Server Components.
+---
 
-## 5. Test-Driven Development (TDD) Workflow
-Follow the "Red-Green-Refactor" cycle for all new features.
+## 5. Testing Implementation
 
-- **Red (Failing Test)**: Before writing any feature code, write a test using Jest and React Testing Library that describes the desired outcome and fails.
+Your global rule mandates a TDD workflow. This section specifies the tools to use for that workflow.
 
-- **Green (Passing Code)**: Write the simplest possible code in your components and Server Actions to make the test pass.
+- **Unit & Component Tests**: Use **Jest** with **React Testing Library**.
+- **End-to-End (E2E) Tests**: Use **Playwright** for critical user flows like form submissions and navigation.
 
-- **Refactor**: Clean up and improve the code while ensuring the test continues to pass.
+---
 
-- **Example AI Prompt for TDD**:
+## 6. UI & Styling Philosophy ("Function Over Form")
 
-"I have written a failing Jest test in __tests__/ui/ProjectTracker.test.tsx that asserts a new reaction is displayed after clicking the react button. Here is the shell of my component in app/ui/Workshop.tsx and my Server Action in app/lib/actions.ts. Write the necessary code to make the test pass."
+This is the most critical rule for UI generation. The goal is to produce functional, "headless" scaffolding that you will style later.
+
+- **Use Unstyled, Semantic HTML**: Default to plain, semantic HTML elements (`<button>`, `<input>`, `<h2>`, `<section>`). Do not use `<div>` when a more specific tag is appropriate.
+- **Forbid Decorative Styling**: **Do not** use any decorative Tailwind CSS classes. This includes colors (`bg-blue-500`, `text-gray-900`), shadows (`shadow-md`), borders (`border`, `rounded-lg`), padding (`p-4`), and margins (`m-2`). The generated UI should be "ugly" but functional.
+- **Allow Minimal Layout Utilities**: The only permitted Tailwind CSS classes are for essential layout and structure: `flex`, `grid`, `flex-col`, `grid-cols-*`, `gap-*`, `items-*`, and `justify-*`. Use these only when necessary to make the layout functional.
+- **Strict Componentization**: Any UI element that could be reused (button, input, card, modal) **must** be created as a separate, unstyled component in the `app/ui/` directory. These components should accept all necessary props for their logic but contain no decorative styling.
+- **Define Prop Contracts**: Every component **must** have a TypeScript `interface` defining its props. This ensures the component's functionality is clear and correct, even without styling.
+
+## 7. Accessibility (a11y) First
+
+The underlying HTML structure should be accessible from the very beginning. The functional scaffolding needs to be usable by screen readers and keyboard navigation from the start. 
+
+- **Semantic HTML**: Use semantic HTML elements (`<nav>`, `<main>`, `<button>`) instead of generic `<div>` tags wherever appropriate.
+- **Form Labels**: Every `<input>`, `<select>`, and `<textarea>` element must have an associated `<label>` with a htmlFor attribute.
+- **Keyboard Navigation**: All interactive elements (buttons, links) must be focusable and operable via the keyboard. Do not create onClick handlers on non-interactive elements like `<div>`.
