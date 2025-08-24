@@ -122,8 +122,8 @@ tag_ids: ['uuid-for-next-js', 'uuid-for-game-design']
 ```
 
 * Structured data (Database)  
-  * **Hosting**: 🛠️ **PostgreSQL** hosted on **Vercel**, easy handshake between deployment platform and hosting  
-  * **Type-Safe Access**: 🛠️ **Prisma** will be used as the ORM (Object-Relational Mapper) to provide type safety when communicating with the database  
+  * **Hosting**: 🛠️ **PostgreSQL** hosted on **Vercel** with **Prisma Postgres**, easy handshake between deployment platform and hosting  
+  * **Type-Safe Access**: 🛠️ **Prisma** will be used as the ORM (Object-Relational Mapper) and Prisma Postgres will be used as the database provider, to provide type safety when communicating with the database  
   * **Validation**: 🛠️ **Zod** will be used to validate data schemas, ensuring that data (especially from forms) is in the correct format before being sent to the database
 
 ### **🖥️ Frontend & UI**
