@@ -20,7 +20,8 @@ const eslintConfig = [
       "next-env.d.ts",
       "app/generated/**",
       "tests-examples/**",
-      "__tests__/**"
+      "__tests__/**",
+      "coverage/**"
     ],
   },
 ];
