@@ -14,7 +14,7 @@ Andrew's philosophy is a two-pass approach between the Cursor agent and the huma
 
 - **Framework**: Next.js (App Router)
 - **Language**: TypeScript
-- **Database**: PostgreSQL (via Supabase)
+- **Database**: Prisma PostgreSQL (hosted by Prisma and linked to Vercel)
 - **ORM**: Prisma
 - **Authentication**: NextAuth.js
 - **Styling**: Tailwind CSS (Minimal Use - See Section 6)
@@ -28,7 +28,7 @@ Andrew's philosophy is a two-pass approach between the Cursor agent and the huma
 All data logic must be type-safe and executed on the server. Do not create a separate API layer.
 
 ### a. Database Access & Mutations
-- **Prisma Exclusivity**: All database queries and mutations **must** use the **Prisma** client. Do not use the Supabase JS client for database access. The Prisma client must only be imported and used in server-side files (Server Components or Server Actions).
+- **Prisma Exclusivity**: All database queries and mutations **must** use the **Prisma** client. The Prisma client must only be imported and used in server-side files (Server Components or Server Actions).
 - **Server Actions for Mutations**: All database writes (create, update, delete) **must** be handled via **Server Actions**. Define these in `app/lib/actions.ts` or directly within the Server Component that uses them.
 
 ### b. Data Validation

@@ -1,0 +1,186 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../app/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// Enums
+enum ProjectStatus {
+  Ideation
+  InProgress
+  Shipped
+  Archived
+  Abandoned
+}
+
+enum ArtifactType {
+  DevLog
+  BlogPost
+  Link
+  Image
+}
+
+enum UserRole {
+  Admin
+  User
+}
+
+// Core Models
+model Project {
+  id                   String        @id @default(cuid())
+  name                 String
+  description          String
+  status               ProjectStatus
+  ideation_date        DateTime
+  last_updated_date    DateTime      @updatedAt
+  llm_summary          String?       @db.Text
+  llm_sentiment_phrase String?
+  created_at           DateTime      @default(now())
+
+  // Relationships
+  artifacts ProjectArtifact[]
+  reactions Reaction[]
+
+  @@map("projects")
+}
+
+model Artifact {
+  id           String       @id @default(cuid())
+  title        String
+  publish_date DateTime
+  content_path String
+  is_featured  Boolean      @default(false)
+  type         ArtifactType
+  created_at   DateTime     @default(now())
+
+  // Relationships
+  projects  ProjectArtifact[]
+  tags      ArtifactTag[]
+  reactions Reaction[]
+
+  @@map("artifacts")
+}
+
+model Tag {
+  id         String   @id @default(cuid())
+  name       String   @unique
+  created_at DateTime @default(now())
+
+  // Relationships
+  artifacts ArtifactTag[]
+
+  @@map("tags")
+}
+
+model Reaction {
+  id          String   @id @default(cuid())
+  emoji       String
+  review_text String?  @db.Text
+  created_at  DateTime @default(now())
+
+  // Foreign Keys
+  user_id     String?
+  project_id  String?
+  artifact_id String?
+
+  // Relationships
+  user     User?     @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  project  Project?  @relation(fields: [project_id], references: [id], onDelete: Cascade)
+  artifact Artifact? @relation(fields: [artifact_id], references: [id], onDelete: Cascade)
+
+  @@map("reactions")
+}
+
+// Many-to-Many Join Tables
+model ProjectArtifact {
+  project_id  String
+  artifact_id String
+  created_at  DateTime @default(now())
+
+  project  Project  @relation(fields: [project_id], references: [id], onDelete: Cascade)
+  artifact Artifact @relation(fields: [artifact_id], references: [id], onDelete: Cascade)
+
+  @@id([project_id, artifact_id])
+  @@map("project_artifacts")
+}
+
+model ArtifactTag {
+  artifact_id String
+  tag_id      String
+  created_at  DateTime @default(now())
+
+  artifact Artifact @relation(fields: [artifact_id], references: [id], onDelete: Cascade)
+  tag      Tag      @relation(fields: [tag_id], references: [id], onDelete: Cascade)
+
+  @@id([artifact_id, tag_id])
+  @@map("artifact_tags")
+}
+
+// NextAuth.js Models
+model User {
+  id            String    @id @default(cuid())
+  name          String?
+  email         String    @unique
+  role          UserRole  @default(User)
+  password_hash String?
+  emailVerified DateTime?
+  image         String?
+  created_at    DateTime  @default(now())
+
+  // Relationships
+  accounts  Account[]
+  sessions  Session[]
+  reactions Reaction[]
+
+  @@map("users")
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+  @@map("accounts")
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("sessions")
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+  @@map("verification_tokens")
+}
