@@ -99,7 +99,6 @@ async function main() {
       title: 'Dev Log #1: Setting up the Foundation',
       publish_date: new Date('2024-12-10'),
       content_path: '/content/devlog-001-foundation.mdx',
-      is_featured: true,
       type: 'DevLog',
     },
   })
@@ -109,7 +108,6 @@ async function main() {
       title: 'Dev Log #2: Database Schema Design',
       publish_date: new Date('2024-12-15'),
       content_path: '/content/devlog-002-database.mdx',
-      is_featured: true,
       type: 'DevLog',
     },
   })
@@ -119,7 +117,6 @@ async function main() {
       title: 'Lessons from Building My First Personal Site',
       publish_date: new Date('2024-12-01'),
       content_path: '/content/blog-personal-site-lessons.mdx',
-      is_featured: false,
       type: 'BlogPost',
     },
   })
@@ -129,7 +126,6 @@ async function main() {
       title: 'Game Design Doc: Island Survival Mechanics',
       publish_date: new Date('2024-11-20'),
       content_path: '/content/island-game-design.mdx',
-      is_featured: false,
       type: 'DevLog',
     },
   })
@@ -139,7 +135,6 @@ async function main() {
       title: 'Automation Scripts Collection',
       publish_date: new Date('2024-10-15'),
       content_path: '/content/automation-scripts.mdx',
-      is_featured: false,
       type: 'Link',
     },
   })
