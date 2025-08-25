@@ -3,7 +3,7 @@ import Home from '../app/page';
 
 describe('Home Page', () => {
   it('renders the main heading', async () => {
-    const Page = await Home({});
+    const Page = await Home();
     render(Page);
     
     // Check that the main content is rendered
@@ -11,7 +11,7 @@ describe('Home Page', () => {
   });
 
   it('displays the titles from the markdown files', async () => {
-    const Page = await Home({});
+    const Page = await Home();
     render(Page);
 
     expect(screen.getByText('Launch post')).toBeInTheDocument();
