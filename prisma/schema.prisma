@@ -59,7 +59,6 @@ model Artifact {
   title        String
   publish_date DateTime
   content_path String
-  is_featured  Boolean      @default(false)
   type         ArtifactType
   created_at   DateTime     @default(now())
 
