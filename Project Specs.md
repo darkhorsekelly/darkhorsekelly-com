@@ -62,7 +62,7 @@
   * 🧩 Primary UI component: Displays **list of artifacts**:  
     * Default: Auto-sorted by time featuring the most recent first.   
     * List of artifacts is an amalgamation of:  
-      * (1) 🧩 UI component: **Featured artifacts** more stylize, larger preview for more recent artifacts  
+      * (1) 🧩 UI component: **Featured artifacts** more stylize, larger preview for the most recent 3 artifacts  
       * (2) 🧩 UI component: **Listed artifacts** are more of a table UI of remaining artifacts  
         * 🧩 UI component: **Pagination**  
       * Each one displays:  
@@ -115,7 +115,6 @@ Two distinct parts: Markdown (.mdx) files for primary content and PostgreSQL for
 --- 
 title: 'Dev Log #1: Building the Island' 
 publish_date: '2025-08-21T10:00:00Z' 
-is_featured: true 
 project_ids: ['uuid-for-codename-island'] 
 tag_ids: ['uuid-for-next-js', 'uuid-for-game-design'] 
 ---
@@ -183,7 +182,6 @@ Handle how content is rendered, styled & displayed
 * 🏷️ **Field**: `title` (string)  
 * 🏷️ **Field**: `publish_date` (datetime)  
 * 🏷️ **Field**: `content_path` (string, path to the markdown file, e.g., `/content/my-post.md`)  
-* 🏷️ **Field**: `is_featured` (boolean, to control the "Featured artifacts" UI)  
 * 🏷️ **Field**: `type` (enum: "Dev Log", "Blog Post", "Link", "Image")  
 * 🏷️ **Relational Field**: `projects` (Many-to-Many relationship with `Project` object)  
 * 🏷️ **Relational Field**: `tags` (Many-to-Many relationship with `Tag` object)
